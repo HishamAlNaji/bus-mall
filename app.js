@@ -30,28 +30,45 @@ var displayedProductRight;
 var displayLeft = document.getElementById('displayLeft');
 var displayCenter = document.getElementById('displayCenter');
 var displayRight = document.getElementById('displayRight');
+var previousProducts = [];
 
 function displayRandomProducts() {
 
-    displayedProductLeft = Math.floor(Math.random() * productsArr.length);
 
-    var productLeftPosition = objectsArr[displayedProductLeft]
+    displayedProductLeft = Math.floor(Math.random() * productsArr.length);
+    var productLeftPosition = objectsArr[displayedProductLeft];
+    for (var z = 0; z < previousProducts.length; z++) {
+        if (productLeftPosition === previousProducts[z]) {
+            displayedProductLeft = Math.floor(Math.random() * productsArr.length);
+            var productLeftPosition = objectsArr[displayedProductLeft];
+        }
+    }
+    previousProducts.push(productLeftPosition);
 
     displayedProductCenter = Math.floor(Math.random() * productsArr.length);
-    while (displayedProductCenter === displayedProductLeft || displayedProductCenter === displayedProductRight) {
-        displayedProductCenter = Math.floor(Math.random() * productsArr.length);
+    var productCenterPosition = objectsArr[displayedProductCenter];
+    for (var i = 0; i < previousProducts.length; i++) {
+        if (productCenterPosition === previousProducts[i]) {
+            displayedProductCenter = Math.floor(Math.random() * productsArr.length);
+            var productCenterPosition = objectsArr[displayedProductCenter];
+        }
     }
-    var productCenterPosition = objectsArr[displayedProductCenter]
+    previousProducts.push(productCenterPosition);
 
     displayedProductRight = Math.floor(Math.random() * productsArr.length);
-    while (displayedProductRight === displayedProductCenter || displayedProductRight === displayedProductLeft) {
-        displayedProductRight = Math.floor(Math.random() * productsArr.length);
+    var productRightPosition = objectsArr[displayedProductRight];
+    for (var x = 0; x < previousProducts.length; x++) {
+        if (productRightPosition === previousProducts[x]) {
+            displayedProductRight = Math.floor(Math.random() * productsArr.length);
+            var productRightPosition = objectsArr[displayedProductRight];
+        }
     }
-    var displayedCenterRight = objectsArr[displayedProductRight]
 
-    displayLeft.setAttribute('src', productLeftPosition.url)
-    displayCenter.setAttribute('src', productCenterPosition.url)
-    displayRight.setAttribute('src', displayedCenterRight.url)
+    previousProducts.push(productRightPosition);
+
+    displayLeft.setAttribute('src', productLeftPosition.url);
+    displayCenter.setAttribute('src', productCenterPosition.url);
+    displayRight.setAttribute('src', productRightPosition.url);
 
 }
 
