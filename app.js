@@ -7,9 +7,11 @@ var productsArr = ['bag.jpg', 'banana.jpg', 'bathroom.jpg', 'boots.jpg', 'breakf
     'usb.gif', 'water-can.jpg'
 ];
 
-var objectsArr = []
+var objectsArr = [];
 
 var totalClicks = 0;
+
+
 
 function Product(name, url) {
     this.name = name;
@@ -17,6 +19,7 @@ function Product(name, url) {
     this.clicked = 0;
     this.timeDisplayed = 0;
     objectsArr.push(this);
+
 }
 
 for (var i = 0; i < productsArr.length; i++) {
@@ -83,23 +86,30 @@ function clicks() {
     objectsArr[displayedProductLeft].timeDisplayed += 1;
     objectsArr[displayedProductCenter].timeDisplayed += 1;
     objectsArr[displayedProductRight].timeDisplayed += 1;
-    if (totalClicks < 25) {
+    if (totalClicks <= 25) {
         var clickedElement = event.target.id
     } else {
 
-        var resultsList = document.getElementById('finalResults');
+        // var resultsList = document.getElementById('finalResults');
 
-        for (let i = 0; i < objectsArr.length; i++) {
-            var listItem = document.createElement('li');
-            listItem.textContent = objectsArr[i].name + ' had ' + objectsArr[i].clicked + ' votes and was shown ' + objectsArr[i].timeDisplayed + ' times.'
-            resultsList.appendChild(listItem);
-        }
+        // for (let i = 0; i < objectsArr.length; i++) {
+        //     var listItem = document.createElement('li');
+        //     var res = objectsArr[i].name.substring(0, objectsArr[i].name.length - 4);
+        //     listItem.textContent = res + ' had ' + objectsArr[i].clicked + ' votes and was shown ' + objectsArr[i].timeDisplayed + ' times.'
+        //     resultsList.appendChild(listItem);
+        // }
         displayLeft.removeEventListener('click', leftClick);
         displayCenter.removeEventListener('click', centerClick);
         displayRight.removeEventListener('click', rightClick);
+        renderChart();
+        // console.log(productsNames);
+        console.log(productsViews);
+
+
     }
     console.log(clickedElement);
     displayRandomProducts();
+
 }
 
 function leftClick(event) {
@@ -115,4 +125,53 @@ function centerClick(event) {
 function rightClick(event) {
     objectsArr[displayedProductRight].clicked += 1;
     clicks();
+}
+
+
+
+function renderChart() {
+
+    var productsNames = [];
+    var productsClicks = [];
+    var productsViews = [];
+
+    for (var i = 0; i < objectsArr.length; i++) {
+        var productName = objectsArr[i].name.substring(0, objectsArr[i].name.length - 4);
+        productsNames.push(productName);
+        var productLikes = objectsArr[i].clicked;
+        productsClicks.push(productLikes);
+        var productView = objectsArr[i].timeDisplayed;
+        productsViews.push(productView);
+    }
+
+    var ctx = document.getElementById('chart').getContext('2d');
+    var chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: productsNames,
+            datasets: [{
+                label: '# of Votes',
+                data: productsClicks,
+                backgroundColor: 'rgba(140, 43, 235)',
+                borderColor: 'rgba(138, 43, 226)',
+                borderWidth: 1
+            }, {
+                label: '# of Views',
+                data: productsViews,
+                backgroundColor: 'rgba(255, 99, 132)',
+                borderColor: 'rgba(255, 99, 132)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        precision: 0,
+                        beginAtZero: true
+                    }
+                }]
+            }
+        }
+    });
 }
