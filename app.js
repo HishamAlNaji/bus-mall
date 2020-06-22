@@ -152,14 +152,14 @@ function renderChart() {
             datasets: [{
                 label: '# of Votes',
                 data: productsClicks,
-                backgroundColor: 'rgba(140, 43, 235)',
-                borderColor: 'rgba(138, 43, 226)',
+                backgroundColor: 'rgba(140, 215, 144 , 0.7)',
+                borderColor: 'rgba(140, 215, 144)',
                 borderWidth: 1
             }, {
                 label: '# of Views',
                 data: productsViews,
-                backgroundColor: 'rgba(255, 99, 132)',
-                borderColor: 'rgba(255, 99, 132)',
+                backgroundColor: 'rgba(40, 89, 67 , 0.7)',
+                borderColor: 'rgba(40, 89, 67)',
                 borderWidth: 1
             }]
         },
