@@ -37,37 +37,30 @@ var previousProducts = [];
 
 function displayRandomProducts() {
 
-
-    displayedProductLeft = Math.floor(Math.random() * productsArr.length);
+    displayedProductLeft = randomNum();
     var productLeftPosition = objectsArr[displayedProductLeft];
-    for (var z = 0; z < previousProducts.length; z++) {
-        if (productLeftPosition === previousProducts[z]) {
-            displayedProductLeft = Math.floor(Math.random() * productsArr.length);
-            var productLeftPosition = objectsArr[displayedProductLeft];
-        }
-    }
-    previousProducts.push(productLeftPosition);
+    displayedProductLeft = randomNum();
+    var productLeftPosition = objectsArr[displayedProductLeft];
 
-    displayedProductCenter = Math.floor(Math.random() * productsArr.length);
+    displayedProductCenter = randomNum();
     var productCenterPosition = objectsArr[displayedProductCenter];
-    for (var i = 0; i < previousProducts.length; i++) {
-        if (productCenterPosition === previousProducts[i]) {
-            displayedProductCenter = Math.floor(Math.random() * productsArr.length);
-            var productCenterPosition = objectsArr[displayedProductCenter];
-        }
+    while (productCenterPosition === productLeftPosition || previousProducts.includes(productCenterPosition)) {
+        displayedProductCenter = randomNum();
+        var productCenterPosition = objectsArr[displayedProductCenter];
     }
-    previousProducts.push(productCenterPosition);
 
-    displayedProductRight = Math.floor(Math.random() * productsArr.length);
+    displayedProductRight = randomNum();
     var productRightPosition = objectsArr[displayedProductRight];
-    for (var x = 0; x < previousProducts.length; x++) {
-        if (productRightPosition === previousProducts[x]) {
-            displayedProductRight = Math.floor(Math.random() * productsArr.length);
-            var productRightPosition = objectsArr[displayedProductRight];
-        }
+    while (productRightPosition === productCenterPosition || productRightPosition === productLeftPosition || previousProducts.includes(productRightPosition)) {
+        displayedProductRight = randomNum();
+        var productRightPosition = objectsArr[displayedProductRight];
     }
+    previousProducts = [];
 
+    previousProducts.push(productLeftPosition);
+    previousProducts.push(productCenterPosition);
     previousProducts.push(productRightPosition);
+
 
     displayLeft.setAttribute('src', productLeftPosition.url);
     displayCenter.setAttribute('src', productCenterPosition.url);
@@ -84,10 +77,14 @@ displayRight.addEventListener('click', rightClick);
 function clicks() {
     totalClicks += 1;
     objectsArr[displayedProductLeft].timeDisplayed += 1;
+    store(objectsArr[displayedProductLeft]);
     objectsArr[displayedProductCenter].timeDisplayed += 1;
+    store(objectsArr[displayedProductCenter]);
     objectsArr[displayedProductRight].timeDisplayed += 1;
+    store(objectsArr[displayedProductRight]);
     if (totalClicks <= 25) {
         var clickedElement = event.target.id
+
     } else {
 
         // var resultsList = document.getElementById('finalResults');
@@ -103,11 +100,11 @@ function clicks() {
         displayRight.removeEventListener('click', rightClick);
         renderChart();
         // console.log(productsNames);
-        console.log(productsViews);
+
 
 
     }
-    console.log(clickedElement);
+    // console.log(clickedElement);
     displayRandomProducts();
 
 }
@@ -127,7 +124,33 @@ function rightClick(event) {
     clicks();
 }
 
+function store(item) {
+    // console.log("test", item)
+    var results = JSON.stringify(item);
+    localStorage.setItem(item.name, results);
+}
+var storageObj = [];
 
+function report() {
+    if (localStorage.length == 0) {
+        console.log('there is none');
+    } else {
+        for (let i = 0; i < localStorage.length; i++) {
+            var Key = localStorage.key(i);
+            var Item = JSON.parse(localStorage.getItem(Key));
+            storageObj.push(Item)
+        }
+        // console.log(storageObj);
+        objectsArr = storageObj;
+        renderChart()
+    }
+
+}
+report();
+
+function randomNum() {
+    return Math.floor(Math.random() * productsArr.length);
+}
 
 function renderChart() {
 
