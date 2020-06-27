@@ -1,4 +1,5 @@
 'use strict';
+// ----------------------------- Global variables :
 
 var productsArr = ['bag.jpg', 'banana.jpg', 'bathroom.jpg', 'boots.jpg', 'breakfast.jpg', 'bubblegum.jpg',
     'chair.jpg', 'cthulhu.jpg', 'dog-duck.jpg', 'dragon.jpg',
@@ -8,10 +9,16 @@ var productsArr = ['bag.jpg', 'banana.jpg', 'bathroom.jpg', 'boots.jpg', 'breakf
 ];
 
 var objectsArr = [];
-
 var totalClicks = 0;
+var displayedProductLeft;
+var displayedProductCenter;
+var displayedProductRight;
+var displayLeft = document.getElementById('displayLeft');
+var displayCenter = document.getElementById('displayCenter');
+var displayRight = document.getElementById('displayRight');
+var previousProducts = [];
 
-
+// ----------------------------- Constructor :
 
 function Product(name, url) {
     this.name = name;
@@ -22,25 +29,33 @@ function Product(name, url) {
 
 }
 
+// ----------------------------- making the objects array :
+
 for (var i = 0; i < productsArr.length; i++) {
     new Product(productsArr[i], "img/" + productsArr[i])
 }
 
-console.log(objectsArr);
-var displayedProductLeft;
-var displayedProductCenter;
-var displayedProductRight;
-var displayLeft = document.getElementById('displayLeft');
-var displayCenter = document.getElementById('displayCenter');
-var displayRight = document.getElementById('displayRight');
-var previousProducts = [];
+
+var storageObj = [];
+
+
+
+report(); //make the chart according to the local storage data
+displayRandomProducts();
+
+// console.log(objectsArr);
+
+// -------------------------- variables to display random images
 
 function displayRandomProducts() {
+    // console.log('display', objectsArr.length);
 
     displayedProductLeft = randomNum();
     var productLeftPosition = objectsArr[displayedProductLeft];
-    displayedProductLeft = randomNum();
-    var productLeftPosition = objectsArr[displayedProductLeft];
+    while (previousProducts.includes(productLeftPosition)) {
+        displayedProductLeft = randomNum();
+        var productLeftPosition = objectsArr[displayedProductLeft];
+    }
 
     displayedProductCenter = randomNum();
     var productCenterPosition = objectsArr[displayedProductCenter];
@@ -55,6 +70,7 @@ function displayRandomProducts() {
         displayedProductRight = randomNum();
         var productRightPosition = objectsArr[displayedProductRight];
     }
+    // console.log(previousProducts);
     previousProducts = [];
 
     previousProducts.push(productLeftPosition);
@@ -68,14 +84,15 @@ function displayRandomProducts() {
 
 }
 
-displayRandomProducts();
-
 displayLeft.addEventListener('click', leftClick);
 displayCenter.addEventListener('click', centerClick);
 displayRight.addEventListener('click', rightClick);
 
 function clicks() {
     totalClicks += 1;
+    localStorage.setItem("totalclicks", totalClicks);
+    console.log(totalClicks)
+        // console.log('displayedProductCenter', displayedProductCenter);
     objectsArr[displayedProductLeft].timeDisplayed += 1;
     store(objectsArr[displayedProductLeft]);
     objectsArr[displayedProductCenter].timeDisplayed += 1;
@@ -83,7 +100,7 @@ function clicks() {
     objectsArr[displayedProductRight].timeDisplayed += 1;
     store(objectsArr[displayedProductRight]);
     if (totalClicks <= 25) {
-        var clickedElement = event.target.id
+        var clickedElement = event.target.id;
 
     } else {
 
@@ -95,6 +112,8 @@ function clicks() {
         //     listItem.textContent = res + ' had ' + objectsArr[i].clicked + ' votes and was shown ' + objectsArr[i].timeDisplayed + ' times.'
         //     resultsList.appendChild(listItem);
         // }
+        totalClicks = 0;
+        localStorage.setItem("totalclicks", totalClicks);
         displayLeft.removeEventListener('click', leftClick);
         displayCenter.removeEventListener('click', centerClick);
         displayRight.removeEventListener('click', rightClick);
@@ -129,7 +148,7 @@ function store(item) {
     var results = JSON.stringify(item);
     localStorage.setItem(item.name, results);
 }
-var storageObj = [];
+
 
 function report() {
     if (localStorage.length == 0) {
@@ -137,19 +156,28 @@ function report() {
     } else {
         for (let i = 0; i < localStorage.length; i++) {
             var Key = localStorage.key(i);
-            var Item = JSON.parse(localStorage.getItem(Key));
+            if (Key !== 'totalclicks') {
+                var Item = JSON.parse(localStorage.getItem(Key));
+            }
+
             storageObj.push(Item)
         }
         // console.log(storageObj);
         objectsArr = storageObj;
+        var tc = Number(localStorage.getItem("totalclicks"));
+        totalClicks = tc;
+        console.log("report", totalClicks);
+        // totalClicks = Number(localStorage.getItem("totalClicks"));
+        // console.log("report", objectsArr.length);
+
         renderChart()
     }
 
 }
-report();
 
 function randomNum() {
-    return Math.floor(Math.random() * productsArr.length);
+    // console.log("random", objectsArr.length);
+    return Math.floor(Math.random() * objectsArr.length);
 }
 
 function renderChart() {
@@ -157,7 +185,7 @@ function renderChart() {
     var productsNames = [];
     var productsClicks = [];
     var productsViews = [];
-
+    // console.log('render', objectsArr.length);
     for (var i = 0; i < objectsArr.length; i++) {
         var productName = objectsArr[i].name.substring(0, objectsArr[i].name.length - 4);
         productsNames.push(productName);
